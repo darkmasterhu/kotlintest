@@ -1,0 +1,104 @@
+group 'hu.testing'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
+}
+
+buildscript {
+    // Source
+    ext.kotlin_version = '1.2.41'
+
+    // Test
+    ext.junit_version = '1.2.0'
+    ext.spek_version = '1.1.5'
+    ext.assertj_version = '3.9.1'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$junit_version"
+    }
+}
+
+// --------------------------
+// Plugins
+// --------------------------
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+// --------------------------
+// Plugin configuration
+// --------------------------
+
+junitPlatform {
+    platformVersion "$junit_version"
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
+}
+
+// --------------------------
+// Compile dependencies
+// --------------------------
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+// --------------------------
+// Runtime dependencies
+// --------------------------
+
+dependencies {
+}
+
+// --------------------------
+// Test Compile dependencies
+// --------------------------
+
+dependencies {
+    // Kotlin
+    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    testCompile 'org.jetbrains.kotlin:kotlin-test'
+
+    // JUnit
+    testCompile "org.junit.platform:junit-platform-runner:$junit_version"
+
+    // Spek
+    testCompile("org.jetbrains.spek:spek-api:$spek_version") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+
+    // AssertJ
+    testCompile("org.assertj:assertj-core:$assertj_version")
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+// --------------------------
+// Test Runtime dependencies
+// --------------------------
+
+dependencies {
+    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:$spek_version") {
+        exclude group: 'org.junit.platform'
+        exclude group: 'org.jetbrains.kotlin'
+    }
+}
+
